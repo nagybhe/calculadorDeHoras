@@ -240,6 +240,7 @@
 			string,
 			{
 				name: string;
+				task: string;
 				month: number;
 				year: number;
 				hours: number;
@@ -248,9 +249,10 @@
 		>();
 
 		for (const record of records) {
-			const key = `${record.name.trim().toLowerCase()}-${record.year}-${record.month}`;
+			const key = `${record.name.trim().toLowerCase()}-${record.task.trim().toLowerCase()}-${record.year}-${record.month}`;
 			const current = groupedRecords.get(key) ?? {
 				name: record.name,
+				task: record.task,
 				month: record.month,
 				year: record.year,
 				hours: 0,
@@ -264,6 +266,7 @@
 
 		return [...groupedRecords.values()].sort((a, b) => {
 			if (a.name !== b.name) return a.name.localeCompare(b.name);
+			if (a.task !== b.task) return a.task.localeCompare(b.task);
 			if (a.year !== b.year) return a.year - b.year;
 			return a.month - b.month;
 		});
@@ -277,12 +280,14 @@
 
 		const header = [
 			'Nome do usuário',
+			'Nome da tarefa',
 			'Mês vigente/atual',
 			'Horas trabalhadas'
 		];
 		const rows = getSummaryRows().map((record) => {
 			return [
 				record.name,
+				record.task,
 				getMonthLabel(record.month, record.year),
 				formatCsvNumber(record.hours)
 			];
