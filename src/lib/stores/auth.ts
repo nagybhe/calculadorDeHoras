@@ -1,6 +1,6 @@
-import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { AuthCredentials, User } from '$lib/api/runrun';
+import { writable } from 'svelte/store';
 
 const STORAGE_KEY = 'runrun_auth';
 
@@ -17,7 +17,6 @@ function createAuthStore() {
 		isAuthenticated: false
 	};
 
-	// Load from localStorage on init
 	if (browser) {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		if (stored) {
@@ -32,52 +31,35 @@ function createAuthStore() {
 		}
 	}
 
-	const { subscribe, set, update } = writable<AuthState>(initialState);
+	const { subscribe, set } = writable<AuthState>(initialState);
 
 	return {
 		subscribe,
-		
 		login: (credentials: AuthCredentials, user: User) => {
 			const newState: AuthState = {
 				credentials,
 				user,
 				isAuthenticated: true
 			};
-			
+
 			if (browser) {
-				localStorage.setItem(STORAGE_KEY, JSON.stringify({
-					credentials,
-					user
-				}));
+				localStorage.setItem(STORAGE_KEY, JSON.stringify({ credentials, user }));
 			}
-			
+
 			set(newState);
 		},
-		
 		logout: () => {
 			if (browser) {
 				localStorage.removeItem(STORAGE_KEY);
 			}
-			
+
 			set({
 				credentials: null,
 				user: null,
 				isAuthenticated: false
 			});
-		},
-		
-		getCredentials: (): AuthCredentials | null => {
-			let creds: AuthCredentials | null = null;
-			
-			const unsubscribe = subscribe((state) => {
-				creds = state.credentials;
-			});
-			unsubscribe();
-			
-			return creds;
 		}
 	};
 }
 
 export const auth = createAuthStore();
-
