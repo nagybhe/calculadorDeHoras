@@ -42,6 +42,7 @@
 	let selectedMonth = $state(today.getMonth() + 1);
 	let selectedYear = $state(today.getFullYear());
 	let error = $state('');
+	let showClearConfirm = $state(false);
 	let calendarInput: HTMLInputElement;
 
 	function formatDateInput(date: Date) {
@@ -210,9 +211,30 @@
 		records = records.filter((record) => record.id !== id);
 	}
 
+	function clearFormFields() {
+		name = '';
+		task = '';
+		hours = '';
+		hourlyRate = '';
+		workDate = todayDate;
+		workDateBr = todayDateBr;
+		error = '';
+	}
+
 	function clearRecords() {
-		if (!confirm('Deseja apagar todos os registros?')) return;
+		showClearConfirm = true;
+	}
+
+	function confirmClearRecords() {
 		records = [];
+		clearFormFields();
+		selectedMonth = today.getMonth() + 1;
+		selectedYear = today.getFullYear();
+		showClearConfirm = false;
+	}
+
+	function cancelClearRecords() {
+		showClearConfirm = false;
 	}
 
 	function escapeCsv(value: string | number) {
@@ -424,7 +446,7 @@
 							Baixar CSV consolidado
 						</button>
 						<button class="rounded-xl border border-slate-700 px-5 py-3 font-semibold text-slate-200 transition hover:bg-slate-800" type="button" onclick={clearRecords}>
-							Limpar tudo
+							Limpar registros
 						</button>
 					</div>
 				</form>
@@ -515,3 +537,34 @@
 		</section>
 	</section>
 </main>
+
+{#if showClearConfirm}
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 backdrop-blur-sm" role="presentation">
+		<div class="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl shadow-black/40" role="dialog" aria-modal="true" aria-labelledby="clear-title">
+			<div class="mb-4 flex items-start gap-3">
+				<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/15 text-red-300">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+						<path d="M3 6h18" />
+						<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+						<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+					</svg>
+				</div>
+				<div>
+					<h2 id="clear-title" class="text-lg font-semibold text-slate-100">Limpar registros?</h2>
+					<p class="mt-1 text-sm leading-6 text-slate-400">
+						Isso vai apagar os registros salvos e limpar os campos preenchidos no formulário.
+					</p>
+				</div>
+			</div>
+
+			<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+				<button type="button" class="rounded-xl border border-slate-700 px-5 py-3 font-semibold text-slate-200 transition hover:bg-slate-800" onclick={cancelClearRecords}>
+					Cancelar
+				</button>
+				<button type="button" class="rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-400" onclick={confirmClearRecords}>
+					Limpar registros
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
