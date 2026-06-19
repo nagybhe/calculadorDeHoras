@@ -1,13 +1,18 @@
 {
-  "headers": [
-    {
-      "source": "/favicon.ico",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
-      ]
-    }
-  ]
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"framework": "sveltekit",
+	"installCommand": "npm install",
+	"buildCommand": "npm run build",
+	"devCommand": "npm run dev",
+	"headers": [
+		{
+			"source": "/favicon.ico",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=3600"
+				}
+			]
+		}
+	]
 }
